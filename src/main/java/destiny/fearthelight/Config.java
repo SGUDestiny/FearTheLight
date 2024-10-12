@@ -5,9 +5,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 
-import java.util.List;
-
-@Mod.EventBusSubscriber(modid = FeartheLight.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = FearTheLight.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Config
 {
     public enum DaybreakModes
@@ -19,19 +17,19 @@ public class Config
 
     private static final ForgeConfigSpec.EnumValue<DaybreakModes> DAYBREAK_MODE = BUILDER
             .comment("The mode of Daybreak event")
-            .defineEnum("daybreak_mode", DaybreakModes.CHANCE);
+            .defineEnum("daybreak_mode", DaybreakModes.COUNTDOWN);
 
     private static final ForgeConfigSpec.DoubleValue DAYBREAK_STARTING_CHANCE = BUILDER
             .comment("Starting chance of the Daybreak happening")
-            .defineInRange("daybreak_starting_chance", 0.1,0, 1);
+            .defineInRange("daybreak_starting_chance", 0.1f,0f, 1f);
 
     private static final ForgeConfigSpec.DoubleValue DAYBREAK_ADDITIVE_CHANCE = BUILDER
             .comment("Number added to chance of Daybreak each passing day")
-            .defineInRange("daybreak_additive_chance", 0.1,0, 1);
+            .defineInRange("daybreak_additive_chance", 0.1f,0f, 1f);
 
     private static final ForgeConfigSpec.IntValue DAYBREAK_TIMER = BUILDER
-            .comment("Time in ticks until Daybreak begins")
-            .defineInRange("daybreak_timer", 24000,0, Integer.MAX_VALUE);
+            .comment("Time in days until Daybreak begins")
+            .defineInRange("daybreak_timer", 1,0, Integer.MAX_VALUE);
 
     private static final ForgeConfigSpec.IntValue DAYBREAK_LENGTH_MULTIPLIER = BUILDER
             .comment("Numeric multiplier of how long Daybreak lasts for")
@@ -43,7 +41,7 @@ public class Config
     public static double daybreakStartingChance;
     public static double daybreakAdditiveChance;
     public static int daybreakTimer;
-    public static int daybreakLengthMultiplier;
+    public static int daybreakLength;
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event)
@@ -52,6 +50,6 @@ public class Config
         daybreakStartingChance = DAYBREAK_STARTING_CHANCE.get();
         daybreakAdditiveChance = DAYBREAK_ADDITIVE_CHANCE.get();
         daybreakTimer = DAYBREAK_TIMER.get();
-        daybreakLengthMultiplier = DAYBREAK_LENGTH_MULTIPLIER.get();
+        daybreakLength = DAYBREAK_LENGTH_MULTIPLIER.get();
     }
 }

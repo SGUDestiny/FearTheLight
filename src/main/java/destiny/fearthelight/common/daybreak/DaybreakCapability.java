@@ -2,125 +2,108 @@ package destiny.fearthelight.common.daybreak;
 
 import destiny.fearthelight.Config;
 import destiny.fearthelight.common.advancements.DaybreakStartCriterion;
+import destiny.fearthelight.common.init.ModNetwork;
+import destiny.fearthelight.common.network.packets.DaybreakUpdatePacket;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public class DaybreakCapability implements INBTSerializable<CompoundTag> {
-    public static final String DAYBREAK_CHANCE = "daybreakChance";
-    public static final String DAYBREAK_TIMER = "daybreakTimer";
-    public static final String DAYBREAK_DAYS_LEFT = "daybreakDaysLeft";
-    public static final String IS_DAY_BROKEN = "isDayBroken";
+import java.util.Random;
 
-    public double daybreakChance = 0.0;
-    public int daybreakTimer = 0;
-    public int daybreakDaysLeft = 0;
-    public int previousDay = -1;
+public class DaybreakCapability implements INBTSerializable<CompoundTag> {
+    public static final String DAYBREAK_CURRENT_DAY = "daybreakCurrentDay";
+    public static final String DAYBREAK_STARTED_AT = "daybreakStartedAt";
+    public static final String IS_DAY_BROKEN = "isDayBroken";
+    public static final String CHANCE = "daybreakChance";
+
+    public int currentDay = 0;
+    public int dayStartedAt = 0;
     public boolean isDayBroken = false;
+    public float chance = ((float) Config.daybreakStartingChance);
 
     public void tick(Level level) {
         if(level.isClientSide() || level.getServer() == null) {
             return;
         }
+        float timeOfDay = level.dimensionType().timeOfDay(level.getDayTime());
 
-        onLoad(level);
+        System.out.println("Time of Day: " + timeOfDay);
+        System.out.println("Current Day: " + currentDay);
+        System.out.println("Chance: " + (chance));
 
-        if (Config.daybreakMode == Config.DaybreakModes.CHANCE) {
-            daybreakChanceCalc(level);
-        } else {
-            daybreakCountdownCalc(level);
-        }
-    }
+        if(timeOfDay == 0.5)
+        {
+            System.out.println("TIME CORRECT");
 
-    public void onLoad(Level level) {
-        if (previousDay == -1) {
-            previousDay = getCurrentDay(level);
-        }
-
-        if (daybreakTimer == 0) {
-            daybreakTimer = Config.daybreakTimer;
-        }
-    }
-
-
-    public void daybreakChanceCalc(Level level) {
-        double additive = Config.daybreakAdditiveChance;
-        int currentDay = getCurrentDay(level);
-        double chance = Config.daybreakStartingChance;
-
-        System.out.println("=================");
-        System.out.println("Next tick");
-        System.out.println("=================");
-        System.out.println("Chance: " + daybreakChance);
-        System.out.println("Timer: " + daybreakTimer);
-        System.out.println("-----------");
-        System.out.println("Current day: " + currentDay);
-        System.out.println("Previous day: " + previousDay);
-        System.out.println("Days left: " + daybreakDaysLeft);
-
-        daybreakChance = chance + (additive * currentDay);
-
-        if(currentDay > previousDay) {
-            System.out.println("!!! Random chance rolled !!!");
-            if(daybreakChance > level.random.nextDouble() || daybreakChance >= 1) {
+            currentDay++;
+            if(Config.daybreakMode.equals(Config.DaybreakModes.CHANCE) && calculateChance())
+            {
                 daybreakTrigger(level);
             }
-            previousDay = currentDay;
+            else if(Config.daybreakMode.equals(Config.DaybreakModes.COUNTDOWN) && currentDay >= Config.daybreakTimer && !isDayBroken)
+            {
+                daybreakTrigger(level);
+            }
+            if(currentDay >= dayStartedAt+Config.daybreakLength && isDayBroken)
+            {
+                daybreakUntrigger(level);
+            }
         }
     }
 
-    public void daybreakCountdownCalc(Level level) {
-        int timer = Config.daybreakTimer;
+    public boolean calculateChance()
+    {
+        if(isDayBroken)
+            return false;
 
-        if(timer > 0) {
-            daybreakTimer = timer - 1;
-        } else {
-            daybreakTrigger(level);
+        Random random = new Random();
+        if(random.nextDouble() > 1-chance)
+            return true;
+        else
+            chance += ((float) Config.daybreakAdditiveChance);
+        return false;
+    }
+
+    public void daybreakUntrigger(Level level)
+    {
+        isDayBroken = false;
+        dayStartedAt = 0;
+        ModNetwork.sendPacketToDimension(level.dimension(), new DaybreakUpdatePacket(isDayBroken));
+        for(ServerPlayer player : ((ServerLevel) level).getPlayers(serverPlayer -> true))
+        {
+            DaybreakStartCriterion.DAYBREAK_FINISH.trigger(player);
         }
     }
 
-    public void daybreakTrigger(Level level) {
-        int lengthMultiplier = Config.daybreakLengthMultiplier;
-
-        daybreakDaysLeft = (int) (lengthMultiplier * level.random.nextDouble());
+    public void daybreakTrigger(Level level)
+    {
         isDayBroken = true;
-
-        for(ServerPlayer player : level.getServer().overworld().getPlayers(serverPlayer -> true))
+        dayStartedAt = currentDay;
+        chance = ((float) Config.daybreakStartingChance);
+        ModNetwork.sendPacketToDimension(level.dimension(), new DaybreakUpdatePacket(isDayBroken));
+        for(ServerPlayer player : ((ServerLevel) level).getPlayers(serverPlayer -> true))
         {
             DaybreakStartCriterion.DAYBREAK_START.trigger(player);
         }
     }
 
-    public int getCurrentDay(Level level) {
-        return (int) (level.getDayTime() / 18000 % 2147483647L);
-    }
-
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT()
+    {
         CompoundTag tag = new CompoundTag();
-
-        tag.putDouble(DAYBREAK_CHANCE, daybreakChance);
-        tag.putInt(DAYBREAK_TIMER, daybreakTimer);
-        tag.putInt(DAYBREAK_DAYS_LEFT, daybreakDaysLeft);
+        tag.putInt(DAYBREAK_CURRENT_DAY, currentDay);
+        tag.putInt(DAYBREAK_STARTED_AT, dayStartedAt);
         tag.putBoolean(IS_DAY_BROKEN, isDayBroken);
-
-        System.out.println("-------------");
-        System.out.println("Serialization");
-        System.out.println("-------------");
-        System.out.println("Chance: " + daybreakChance);
-        System.out.println("Timer: " + daybreakTimer);
-        System.out.println("Days left:" + daybreakDaysLeft);
-        System.out.println("Daybreak: " + isDayBroken);
-
         return tag;
     }
 
     @Override
-    public void deserializeNBT(CompoundTag tag) {
-        this.daybreakChance = tag.getDouble(DAYBREAK_CHANCE);
-        this.daybreakTimer = tag.getInt(DAYBREAK_TIMER);
-        this.daybreakDaysLeft = tag.getInt(DAYBREAK_DAYS_LEFT);
+    public void deserializeNBT(CompoundTag tag)
+    {
+        this.currentDay = tag.getInt(DAYBREAK_CURRENT_DAY);
+        this.dayStartedAt = tag.getInt(DAYBREAK_STARTED_AT);
         this.isDayBroken = tag.getBoolean(IS_DAY_BROKEN);
     }
 }

@@ -1,6 +1,6 @@
 package destiny.fearthelight.common.events;
 
-import destiny.fearthelight.FeartheLight;
+import destiny.fearthelight.FearTheLight;
 import destiny.fearthelight.common.GenericProvider;
 import destiny.fearthelight.common.daybreak.DaybreakCapability;
 import destiny.fearthelight.common.init.ModCapabilities;
@@ -12,12 +12,12 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = FeartheLight.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = FearTheLight.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class Events {
     @SubscribeEvent
     public static void attachCapabilities(AttachCapabilitiesEvent<Level> event) {
-        if (event.getObject() instanceof ServerLevel && event.getObject().dimensionTypeId().location().equals(new ResourceLocation("overworld"))) {
-            event.addCapability(new ResourceLocation(FeartheLight.MODID, "daybreak"), new GenericProvider<>(ModCapabilities.DAYBREAK, new DaybreakCapability()));
+        if (event.getObject().dimensionTypeId().location().equals(new ResourceLocation("overworld"))) {
+            event.addCapability(new ResourceLocation(FearTheLight.MODID, "daybreak"), new GenericProvider<>(ModCapabilities.DAYBREAK, new DaybreakCapability()));
         }
     }
 

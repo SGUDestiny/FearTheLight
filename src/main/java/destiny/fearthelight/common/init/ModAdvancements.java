@@ -7,5 +7,6 @@ public class ModAdvancements {
     public static void register()
     {
         CriteriaTriggers.register(DaybreakStartCriterion.DAYBREAK_START);
+        CriteriaTriggers.register(DaybreakStartCriterion.DAYBREAK_FINISH);
     }
 }

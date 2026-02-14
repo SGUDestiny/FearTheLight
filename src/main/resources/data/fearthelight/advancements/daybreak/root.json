@@ -3,21 +3,21 @@
   {
     "icon":
     {
-      "item": "minecraft:coarse_dirt"
+      "item": "minecraft:grass_block"
     },
     "title":
     {
-      "translate": "advancements.fearthelight.daybreak.daybreak_start.title"
+      "translate": "advancements.fearthelight.daybreak.daybreak_begin.title"
     },
     "description":
     {
-      "translate": "advancements.fearthelight.daybreak.daybreak_start.description"
+      "translate": "advancements.fearthelight.daybreak.daybreak_begin.description"
     },
     "frame": "goal",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false,
-    "background": "minecraft:textures/blocks/coarse_dirt.png"
+    "background": "minecraft:textures/block/coarse_dirt.png"
   },
   "criteria":
   {

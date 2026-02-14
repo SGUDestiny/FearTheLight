@@ -19,7 +19,7 @@
     "hidden": false,
     "background": "minecraft:textures/blocks/coarse_dirt.png"
   },
-  "parent": "fearthelight:daybreak/root/daybreak_begin",
+  "parent": "fearthelight:daybreak/root",
   "criteria":
   {
     "daybreak_finish":

@@ -9,39 +9,42 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @OnlyIn(Dist.CLIENT)
 public class DaybreakOverworldEffects extends DimensionSpecialEffects.OverworldEffects {
     public static final ResourceLocation OVERWORLD_EFFECTS = new ResourceLocation("minecraft", "overworld");
 
-    /** Hue for daybreak tint (0–1). 0 = red, ~0.02 = orange; use {@link Color#HSBtoRGB} convention. */
-    public static final float DAYBREAK_RED_HUE = 0f;
+    // Hue: [0f - 1f]
+    public static final float FOG_HUE = 0f;
+    public static final float FOG_SAT = 0.2f;
+    public static final float FOG_BRT = 0f;
 
-    public DaybreakOverworldEffects() {
-        super();
-    }
+    public DaybreakOverworldEffects() {}
 
-    static boolean isDaybreakActive() {
+    public static boolean isDayBroken() {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return false;
-        return level.getCapability(ModCapabilities.DAYBREAK).resolve()
-                .map(cap -> cap.isDayBroken)
-                .orElse(false);
+
+        AtomicBoolean isDayBroken = new AtomicBoolean(false);
+
+        level.getCapability(ModCapabilities.DAYBREAK).ifPresent(cap -> {
+            isDayBroken.set(cap.isDayBroken);
+        });
+
+        return isDayBroken.get();
     }
 
-    /**
-     * Replaces the hue of the given RGB color with {@link #DAYBREAK_RED_HUE}, keeping saturation and brightness.
-     * Used so day/night fog and sky keep their value/brightness but become red.
-     */
     public static Vec3 rgbToRedHue(Vec3 rgb) {
         int r = Mth.clamp((int) (rgb.x * 255), 0, 255);
         int g = Mth.clamp((int) (rgb.y * 255), 0, 255);
         int b = Mth.clamp((int) (rgb.z * 255), 0, 255);
         float[] hsb = new float[3];
         Color.RGBtoHSB(r, g, b, hsb);
-        int out = Color.HSBtoRGB(DAYBREAK_RED_HUE, hsb[1], hsb[2]);
+        int out = Color.HSBtoRGB(FOG_HUE, Mth.clamp(hsb[1] + FOG_SAT, 0, 1), Mth.clamp(hsb[2] + FOG_BRT, 0, 1));
         return new Vec3(
                 ((out >> 16) & 0xFF) / 255.0,
                 ((out >> 8) & 0xFF) / 255.0,
@@ -49,23 +52,30 @@ public class DaybreakOverworldEffects extends DimensionSpecialEffects.OverworldE
         );
     }
 
-    /** Same as {@link #rgbToRedHue(Vec3)} for float r,g,b in [0,1]. */
     public static Vec3 rgbToRedHue(float r, float g, float b) {
         return rgbToRedHue(new Vec3(r, g, b));
     }
 
     @Override
-    public Vec3 getBrightnessDependentFogColor(Vec3 color, float sunHeight) {
+    public @NotNull Vec3 getBrightnessDependentFogColor(Vec3 color, float sunHeight) {
         Vec3 base = super.getBrightnessDependentFogColor(color, sunHeight);
-        if (!isDaybreakActive()) return base;
-        return rgbToRedHue(base);
+
+        if (isDayBroken()) {
+            return rgbToRedHue(base);
+        } else {
+            return base;
+        }
     }
 
     @Override
     public float[] getSunriseColor(float skyAngle, float tickDelta) {
         float[] base = super.getSunriseColor(skyAngle, tickDelta);
-        if (!isDaybreakActive() || base == null) return base;
-        Vec3 rgb = rgbToRedHue(base[0], base[1], base[2]);
-        return new float[]{(float) rgb.x, (float) rgb.y, (float) rgb.z, base[3]};
+
+        if (isDayBroken() && base != null) {
+            Vec3 rgb = rgbToRedHue(base[0], base[1], base[2]);
+            return new float[]{(float) rgb.x, (float) rgb.y, (float) rgb.z, base[3]};
+        } else {
+            return base;
+        }
     }
 }

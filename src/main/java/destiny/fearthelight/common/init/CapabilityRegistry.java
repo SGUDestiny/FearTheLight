@@ -10,7 +10,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = FearTheLight.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class ModCapabilities
+public class CapabilityRegistry
 {
     public static final Capability<DaybreakCapability> DAYBREAK = CapabilityManager.get(new CapabilityToken<>() {});
 

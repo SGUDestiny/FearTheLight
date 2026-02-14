@@ -1,7 +1,7 @@
 package destiny.fearthelight.mixin;
 
 import destiny.fearthelight.common.daybreak.DaybreakOverworldEffects;
-import destiny.fearthelight.common.init.ModCapabilities;
+import destiny.fearthelight.common.init.CapabilityRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
@@ -19,7 +19,7 @@ abstract class MixinOverworldEffects {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null || level.dimension() != Level.OVERWORLD) return;
 
-        level.getCapability(ModCapabilities.DAYBREAK).ifPresent(cap -> {
+        level.getCapability(CapabilityRegistry.DAYBREAK).ifPresent(cap -> {
             if (cap.isDayBroken) {
                 cir.setReturnValue(DaybreakOverworldEffects.rgbToRedHue(cir.getReturnValue()));
             }

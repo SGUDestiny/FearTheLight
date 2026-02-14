@@ -1,8 +1,10 @@
 {
-    "advancements.fearthelight.daybreak_begin.title": "Embrace The Darkness...",
-    "advancements.fearthelight.daybreak_begin.description": "Something terrible is coming...",
-    "advancements.fearthelight.daybreak_active.title": "...Fear The Light",
-    "advancements.fearthelight.daybreak_active.description": "The sun breaks for the first time",
-    "advancements.fearthelight.daybreak_player_death.title": "The Sun Is Beautiful",
-    "advancements.fearthelight.daybreak_player_death.description": "Witness the Broken Sun in all its glory"
+    "advancements.fearthelight.daybreak.begin.title": "Embrace The Darkness...",
+    "advancements.fearthelight.daybreak.begin.description": "Something terrible is coming...",
+    "advancements.fearthelight.daybreak.activate.title": "...Fear The Light",
+    "advancements.fearthelight.daybreak.activate.description": "The sun breaks for the first time",
+    "advancements.fearthelight.daybreak.death_by_sun.title": "The Sun Is Beautiful",
+    "advancements.fearthelight.daybreak.death_by_sun.description": "Witness the Broken Sun in all its glory",
+    "advancements.fearthelight.daybreak.survived.title": "A Broken World",
+    "advancements.fearthelight.daybreak.survived.description": "Survive the Daybreak, but at what cost?"
 }

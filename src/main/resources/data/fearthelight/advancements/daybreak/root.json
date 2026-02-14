@@ -7,11 +7,11 @@
     },
     "title":
     {
-      "translate": "advancements.fearthelight.daybreak.daybreak_begin.title"
+      "translate": "advancements.fearthelight.daybreak.begin.title"
     },
     "description":
     {
-      "translate": "advancements.fearthelight.daybreak.daybreak_begin.description"
+      "translate": "advancements.fearthelight.daybreak.begin.description"
     },
     "frame": "goal",
     "show_toast": true,

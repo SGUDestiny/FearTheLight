@@ -2,8 +2,8 @@ package destiny.fearthelight;
 
 import com.mojang.logging.LogUtils;
 import destiny.fearthelight.common.daybreak.DaybreakOverworldEffects;
-import destiny.fearthelight.common.init.ModAdvancements;
-import destiny.fearthelight.common.init.ModNetwork;
+import destiny.fearthelight.common.init.AdvancementRegistry;
+import destiny.fearthelight.common.init.PacketRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterDimensionSpecialEffectsEvent;
@@ -26,7 +26,7 @@ public class FearTheLight {
     public FearTheLight() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        ModAdvancements.register();
+        AdvancementRegistry.register();
         modEventBus.addListener(this::commonSetup);
 
         MinecraftForge.EVENT_BUS.register(this);
@@ -35,7 +35,7 @@ public class FearTheLight {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        ModNetwork.registerPackets();
+        PacketRegistry.registerPackets();
     }
 
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)

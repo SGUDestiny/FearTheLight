@@ -12,8 +12,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
-public class ModNetwork
-{
+public class PacketRegistry {
     public static final String NET_VERSION = "1.0";
     public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(new ResourceLocation(FearTheLight.MODID, "main"), () -> NET_VERSION, NET_VERSION::equals, NET_VERSION::equals);
 
@@ -24,7 +23,7 @@ public class ModNetwork
     }
 
     public static void sendPacketToAll(Object message){
-        ModNetwork.INSTANCE.send(PacketDistributor.ALL.noArg(), message);
+        PacketRegistry.INSTANCE.send(PacketDistributor.ALL.noArg(), message);
     }
 
     public static void sendPacketToDimension(ResourceKey<Level> level, Object mes){

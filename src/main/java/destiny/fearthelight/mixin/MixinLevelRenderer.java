@@ -3,7 +3,7 @@ package destiny.fearthelight.mixin;
 import com.mojang.blaze3d.systems.RenderSystem;
 import destiny.fearthelight.FearTheLight;
 import destiny.fearthelight.common.daybreak.DaybreakOverworldEffects;
-import destiny.fearthelight.common.init.ModCapabilities;
+import destiny.fearthelight.common.init.CapabilityRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -26,7 +26,7 @@ abstract class MixinLevelRenderer {
 
         AtomicReference<ResourceLocation> sunTexture = new AtomicReference<>(pTextureId);
 
-        level.getCapability(ModCapabilities.DAYBREAK).ifPresent(cap -> {
+        level.getCapability(CapabilityRegistry.DAYBREAK).ifPresent(cap -> {
             if (cap.isDayBroken) {
                 sunTexture.set(new ResourceLocation(FearTheLight.MODID, "textures/environment/bad_sun.png"));
             }
@@ -39,7 +39,7 @@ abstract class MixinLevelRenderer {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null || level.dimension() != Level.OVERWORLD) return;
 
-        level.getCapability(ModCapabilities.DAYBREAK).ifPresent(cap -> {
+        level.getCapability(CapabilityRegistry.DAYBREAK).ifPresent(cap -> {
             if (cap.isDayBroken) {
                 Vec3 rgb = DaybreakOverworldEffects.rgbToRedHue(r, g, b);
                 RenderSystem.setShaderColor((float) rgb.x, (float) rgb.y, (float) rgb.z, a);

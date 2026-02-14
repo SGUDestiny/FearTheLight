@@ -4,8 +4,8 @@ import destiny.fearthelight.FearTheLight;
 import destiny.fearthelight.common.GenericProvider;
 import destiny.fearthelight.common.daybreak.DaybreakCapability;
 import destiny.fearthelight.common.daybreak.DaybreakSavedData;
-import destiny.fearthelight.common.init.ModCapabilities;
-import destiny.fearthelight.common.init.ModNetwork;
+import destiny.fearthelight.common.init.CapabilityRegistry;
+import destiny.fearthelight.common.init.PacketRegistry;
 import destiny.fearthelight.common.network.ClientPacketHandler;
 import destiny.fearthelight.common.network.packets.DaybreakUpdatePacket;
 import net.minecraft.resources.ResourceLocation;
@@ -33,13 +33,13 @@ public class Events {
             cap = new DaybreakCapability();
             cap.isDayBroken = ClientPacketHandler.getOverworldDayBroken();
         }
-        event.addCapability(new ResourceLocation(FearTheLight.MODID, "daybreak"), new GenericProvider<>(ModCapabilities.DAYBREAK, cap));
+        event.addCapability(new ResourceLocation(FearTheLight.MODID, "daybreak"), new GenericProvider<>(CapabilityRegistry.DAYBREAK, cap));
     }
 
     @SubscribeEvent
     public static void levelTick(TickEvent.LevelTickEvent event) {
         if (event.phase != TickEvent.Phase.END || !event.side.isServer() || !(event.level instanceof ServerLevel level)) return;
-        level.getCapability(ModCapabilities.DAYBREAK).ifPresent(cap -> {
+        level.getCapability(CapabilityRegistry.DAYBREAK).ifPresent(cap -> {
             cap.tick(level);
             DaybreakSavedData.get(level).copyFrom(cap);
         });
@@ -50,7 +50,7 @@ public class Events {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         ServerLevel overworld = player.getServer() != null ? player.getServer().overworld() : null;
         if (overworld == null) return;
-        overworld.getCapability(ModCapabilities.DAYBREAK).ifPresent(cap ->
-                ModNetwork.sendTo(player, new DaybreakUpdatePacket(cap.isDayBroken)));
+        overworld.getCapability(CapabilityRegistry.DAYBREAK).ifPresent(cap ->
+                PacketRegistry.sendTo(player, new DaybreakUpdatePacket(cap.isDayBroken)));
     }
 }

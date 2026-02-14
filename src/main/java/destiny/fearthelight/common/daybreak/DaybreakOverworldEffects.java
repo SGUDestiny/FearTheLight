@@ -1,6 +1,6 @@
 package destiny.fearthelight.common.daybreak;
 
-import destiny.fearthelight.common.init.ModCapabilities;
+import destiny.fearthelight.common.init.CapabilityRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
@@ -31,7 +31,7 @@ public class DaybreakOverworldEffects extends DimensionSpecialEffects.OverworldE
 
         AtomicBoolean isDayBroken = new AtomicBoolean(false);
 
-        level.getCapability(ModCapabilities.DAYBREAK).ifPresent(cap -> {
+        level.getCapability(CapabilityRegistry.DAYBREAK).ifPresent(cap -> {
             isDayBroken.set(cap.isDayBroken);
         });
 

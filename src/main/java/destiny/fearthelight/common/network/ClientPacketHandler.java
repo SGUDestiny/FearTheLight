@@ -1,6 +1,6 @@
 package destiny.fearthelight.common.network;
 
-import destiny.fearthelight.common.init.ModCapabilities;
+import destiny.fearthelight.common.init.CapabilityRegistry;
 import destiny.fearthelight.common.network.packets.DaybreakUpdatePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -19,7 +19,7 @@ public class ClientPacketHandler {
         Minecraft mc = Minecraft.getInstance();
         ClientLevel level = mc.level;
         if (level != null) {
-            level.getCapability(ModCapabilities.DAYBREAK).ifPresent(cap -> cap.isDayBroken = mes.isDayBroken);
+            level.getCapability(CapabilityRegistry.DAYBREAK).ifPresent(cap -> cap.isDayBroken = mes.isDayBroken);
 
             if (level.dimension() == Level.OVERWORLD) {
                 LevelRenderer levelRenderer = mc.levelRenderer;

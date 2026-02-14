@@ -1,8 +1,8 @@
 package destiny.fearthelight.common.daybreak;
 
 import destiny.fearthelight.Config;
-import destiny.fearthelight.common.advancements.DaybreakStartCriterion;
-import destiny.fearthelight.common.init.ModNetwork;
+import destiny.fearthelight.common.advancements.DaybreakCriterion;
+import destiny.fearthelight.common.init.PacketRegistry;
 import destiny.fearthelight.common.network.packets.DaybreakUpdatePacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -64,6 +64,12 @@ public class DaybreakCapability implements INBTSerializable<CompoundTag> {
             }
         }
 
+        if (timeOfDay >= 0.75 && timeOfDay <= 0.751 && currentDay == daybreakBeginDay) {
+            for(ServerPlayer player : ((ServerLevel) level).getPlayers(serverPlayer -> true)) {
+                DaybreakCriterion.DAYBREAK_ACTIVATE.trigger(player);
+            }
+        }
+
         System.out.println("Time of Day: " + timeOfDay);
         System.out.println("Current Day: " + currentDay);
         System.out.println("Chance: " + daybreakChance);
@@ -74,9 +80,9 @@ public class DaybreakCapability implements INBTSerializable<CompoundTag> {
         daybreakBeginDay = 0;
         daybreakLength = 0;
         daybreakChance = ((float) Config.daybreakStartingChance);
-        ModNetwork.sendPacketToDimension(level.dimension(), new DaybreakUpdatePacket(isDayBroken));
+        PacketRegistry.sendPacketToDimension(level.dimension(), new DaybreakUpdatePacket(isDayBroken));
         for(ServerPlayer player : ((ServerLevel) level).getPlayers(serverPlayer -> true)) {
-            DaybreakStartCriterion.DAYBREAK_FINISH.trigger(player);
+            DaybreakCriterion.DAYBREAK_FINISH.trigger(player);
         }
     }
 
@@ -85,9 +91,9 @@ public class DaybreakCapability implements INBTSerializable<CompoundTag> {
         daybreakBeginDay = currentDay;
         daybreakChance = ((float) Config.daybreakStartingChance);
         daybreakLength = Mth.nextInt(level.getRandom(), Config.daybreakLengthMin, Config.daybreakLengthMax);
-        ModNetwork.sendPacketToDimension(level.dimension(), new DaybreakUpdatePacket(isDayBroken));
+        PacketRegistry.sendPacketToDimension(level.dimension(), new DaybreakUpdatePacket(isDayBroken));
         for(ServerPlayer player : ((ServerLevel) level).getPlayers(serverPlayer -> true)) {
-            DaybreakStartCriterion.DAYBREAK_START.trigger(player);
+            DaybreakCriterion.DAYBREAK_START.trigger(player);
         }
     }
 

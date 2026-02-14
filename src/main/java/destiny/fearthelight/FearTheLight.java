@@ -1,6 +1,7 @@
 package destiny.fearthelight;
 
 import com.mojang.logging.LogUtils;
+import destiny.fearthelight.common.daybreak.DaybreakOverworldEffects;
 import destiny.fearthelight.common.init.ModAdvancements;
 import destiny.fearthelight.common.init.ModNetwork;
 import net.minecraft.client.Minecraft;
@@ -41,7 +42,7 @@ public class FearTheLight {
     public static class ClientModEvents {
         @SubscribeEvent
         public static void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {
-            //event.register(DaybreakOverworldEffects.OVERWORLD_EFFECTS, new DaybreakOverworldEffects());
+            event.register(DaybreakOverworldEffects.OVERWORLD_EFFECTS, new DaybreakOverworldEffects());
         }
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {

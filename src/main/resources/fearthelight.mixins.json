@@ -1,14 +1,1 @@
-{
-  "required": true,
-  "package": "destiny.mixin",
-  "compatibilityLevel": "JAVA_17",
-  "minVersion": "0.8",
-  "client": [
-    "MixinLevelRenderer"
-  ],
-  "mixins": [
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  }
-}
+{"required":true,"package":"destiny.mixin","compatibilityLevel":"JAVA_17","minVersion":"0.8","client":["MixinLevelRenderer","MixinOverworldEffects"],"mixins":[],"injectors":{"defaultRequire":1}}

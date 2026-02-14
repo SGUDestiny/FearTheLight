@@ -15,8 +15,8 @@ public class Config {
 
     private static final ForgeConfigSpec.EnumValue<DaybreakModes> DAYBREAK_MODE = BUILDER
             .comment("The mode of Daybreak event")
-            .comment("Default: CHANCE")
-            .defineEnum("daybreak_mode", DaybreakModes.CHANCE);
+            .comment("Default: COUNTDOWN")
+            .defineEnum("daybreak_mode", DaybreakModes.COUNTDOWN);
 
     private static final ForgeConfigSpec.IntValue DAYBREAK_LENGTH_MIN = BUILDER
             .comment("Number of the least amount of days the Daybreak lasts for. Must not be equal or greater than maximum amount of days")

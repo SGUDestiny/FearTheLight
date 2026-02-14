@@ -7,11 +7,11 @@
     },
     "title":
     {
-      "translate": "advancements.fearthelight.daybreak.daybreak_finish.title"
+      "translate": "advancements.fearthelight.daybreak.daybreak_survived.title"
     },
     "description":
     {
-      "translate": "advancements.fearthelight.daybreak.daybreak_finish.description"
+      "translate": "advancements.fearthelight.daybreak.daybreak_survived.description"
     },
     "frame": "goal",
     "show_toast": true,
@@ -19,7 +19,7 @@
     "hidden": false,
     "background": "minecraft:textures/blocks/coarse_dirt.png"
   },
-  "parent": "fearthelight:daybreak/root",
+  "parent": "fearthelight:daybreak/root/daybreak_begin",
   "criteria":
   {
     "daybreak_finish":

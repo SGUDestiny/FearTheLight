@@ -64,9 +64,9 @@ public class DaybreakCapability implements INBTSerializable<CompoundTag> {
             }
         }
 
-        //System.out.println("Time of Day: " + timeOfDay);
-        //System.out.println("Current Day: " + currentDay);
-        //System.out.println("Chance: " + daybreakChance);
+        System.out.println("Time of Day: " + timeOfDay);
+        System.out.println("Current Day: " + currentDay);
+        System.out.println("Chance: " + daybreakChance);
     }
 
     public void daybreakEnd(Level level) {
@@ -106,10 +106,10 @@ public class DaybreakCapability implements INBTSerializable<CompoundTag> {
     @Override
     public void deserializeNBT(CompoundTag tag) {
         this.isDayBroken = tag.getBoolean(IS_DAY_BROKEN);
-        this.previousDay = tag.getLong(PREVIOUS_DAY);
+        this.previousDay = tag.contains(PREVIOUS_DAY) ? tag.getLong(PREVIOUS_DAY) : -1L;
         this.currentDay = tag.getInt(CURRENT_DAY);
         this.daybreakChance = tag.getFloat(DAYBREAK_CHANCE);
         this.daybreakBeginDay = tag.getInt(DAYBREAK_BEGIN_DAY);
-        this.daybreakLength = tag.getInt(DAYBREAK_BEGIN_DAY);
+        this.daybreakLength = tag.getInt(DAYBREAK_LENGTH);
     }
 }

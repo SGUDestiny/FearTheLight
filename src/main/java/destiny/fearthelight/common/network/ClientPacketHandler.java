@@ -8,14 +8,19 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.world.level.Level;
 
 public class ClientPacketHandler {
+    private static boolean overworldDayBroken;
+
+    public static boolean getOverworldDayBroken() {
+        return overworldDayBroken;
+    }
+
     public static void updateDayBreak(DaybreakUpdatePacket mes) {
+        overworldDayBroken = mes.isDayBroken;
         Minecraft mc = Minecraft.getInstance();
         ClientLevel level = mc.level;
         if (level != null) {
             level.getCapability(ModCapabilities.DAYBREAK).ifPresent(cap -> cap.isDayBroken = mes.isDayBroken);
 
-            // Invalidate all chunk meshes so grass/water/foliage colors rebuild with new daybreak state.
-            // Otherwise only newly loaded chunks get the daybreak tint; already-rendered chunks keep old colors.
             if (level.dimension() == Level.OVERWORLD) {
                 LevelRenderer levelRenderer = mc.levelRenderer;
                 if (levelRenderer != null) {

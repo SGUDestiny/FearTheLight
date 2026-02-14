@@ -1,11 +1,12 @@
 {
   "required":true,
-  "package":"destiny.mixin",
+  "package":"destiny.fearthelight.mixin",
   "compatibilityLevel":"JAVA_17",
   "minVersion":"0.8",
   "client":[
     "MixinLevelRenderer",
-    "MixinOverworldEffects"
+    "MixinOverworldEffects",
+    "MixinBiomeColors"
   ],
   "mixins":[],
   "injectors":{

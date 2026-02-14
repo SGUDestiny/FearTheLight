@@ -1,4 +1,4 @@
-package destiny.mixin;
+package destiny.fearthelight.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import destiny.fearthelight.FearTheLight;

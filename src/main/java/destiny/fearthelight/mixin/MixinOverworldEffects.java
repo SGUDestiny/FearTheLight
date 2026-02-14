@@ -1,4 +1,4 @@
-package destiny.mixin;
+package destiny.fearthelight.mixin;
 
 import destiny.fearthelight.common.daybreak.DaybreakOverworldEffects;
 import destiny.fearthelight.common.init.ModCapabilities;

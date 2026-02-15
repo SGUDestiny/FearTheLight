@@ -37,6 +37,7 @@ public class DaybreakSavedData extends SavedData {
         tag.putFloat(DaybreakCapability.DAYBREAK_CHANCE, cap.daybreakChance);
         tag.putInt(DaybreakCapability.DAYBREAK_BEGIN_DAY, cap.daybreakBeginDay);
         tag.putInt(DaybreakCapability.DAYBREAK_LENGTH, cap.daybreakLength);
+        tag.putBoolean(DaybreakCapability.PLAYED_START_MUSIC, cap.playedStartMusic);
         setDirty();
     }
 

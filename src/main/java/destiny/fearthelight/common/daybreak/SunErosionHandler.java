@@ -34,7 +34,7 @@ public class SunErosionHandler {
         if (sunDirY <= 0.0) return;
 
         RandomSource random = level.getRandom();
-        int speed = Config.sunErosionSpeed;
+        int erosionSpeed = Config.sunErosionSpeed;
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 
         List<LevelChunk> tickingChunks = new ArrayList<>();
@@ -46,7 +46,7 @@ public class SunErosionHandler {
         }
         if (tickingChunks.isEmpty()) return;
 
-        for (int i = 0; i < speed; i++) {
+        for (int i = 0; i < erosionSpeed; i++) {
             LevelChunk chunk = tickingChunks.get(random.nextInt(tickingChunks.size()));
             int x = chunk.getPos().getMinBlockX() + random.nextInt(16);
             int z = chunk.getPos().getMinBlockZ() + random.nextInt(16);

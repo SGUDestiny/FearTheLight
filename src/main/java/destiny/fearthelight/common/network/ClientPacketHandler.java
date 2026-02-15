@@ -18,15 +18,12 @@ public class ClientPacketHandler {
         overworldDayBroken = mes.isDayBroken;
         Minecraft mc = Minecraft.getInstance();
         ClientLevel level = mc.level;
-        if (level != null) {
-            level.getCapability(CapabilityRegistry.DAYBREAK).ifPresent(cap -> cap.isDayBroken = mes.isDayBroken);
+        if (level == null) return;
 
-            if (level.dimension() == Level.OVERWORLD) {
-                LevelRenderer levelRenderer = mc.levelRenderer;
-                if (levelRenderer != null) {
-                    levelRenderer.allChanged();
-                }
-            }
+        level.getCapability(CapabilityRegistry.DAYBREAK).ifPresent(cap -> cap.isDayBroken = mes.isDayBroken);
+
+        if (level.dimension() == Level.OVERWORLD) {
+            mc.levelRenderer.allChanged();
         }
     }
 }

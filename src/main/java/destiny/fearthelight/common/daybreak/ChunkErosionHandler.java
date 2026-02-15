@@ -13,18 +13,18 @@ import net.minecraft.world.level.levelgen.Heightmap;
 
 public class ChunkErosionHandler {
     public static void processNewChunk(ServerLevel level, LevelChunk chunk, DaybreakCapability cap) {
-        int daysElapsed = cap.currentDay - cap.daybreakBeginDay;
+        int daysAfterStart = cap.currentDay - cap.daybreakBeginDay;
         double phaseLength = cap.daybreakLength / 3.0;
 
-        float chance1 = (float) Mth.clamp(daysElapsed / phaseLength, 0.0, 1.0);
-        float chance2 = (float) Mth.clamp((daysElapsed - phaseLength) / phaseLength, 0.0, 1.0);
-        float chance3 = (float) Mth.clamp((daysElapsed - phaseLength * 2) / phaseLength, 0.0, 1.0);
+        float chancePhase1 = (float) Mth.clamp(daysAfterStart / phaseLength, 0.0, 1.0);
+        float chancePhase2 = (float) Mth.clamp((daysAfterStart - phaseLength) / phaseLength, 0.0, 1.0);
+        float chancePhase3 = (float) Mth.clamp((daysAfterStart - phaseLength * 2) / phaseLength, 0.0, 1.0);
 
-        boolean phase1Active = chance1 > 0 && !Config.sunErosionPhase1.isEmpty();
-        boolean phase2Active = chance2 > 0 && !Config.sunErosionPhase2.isEmpty();
-        boolean phase3Active = chance3 > 0 && !Config.sunErosionPhase3.isEmpty();
+        boolean isPhase1 = chancePhase1 > 0 && !Config.sunErosionPhase1.isEmpty();
+        boolean isPhase2 = chancePhase2 > 0 && !Config.sunErosionPhase2.isEmpty();
+        boolean isPhase3 = chancePhase3 > 0 && !Config.sunErosionPhase3.isEmpty();
 
-        if (!phase1Active && !phase2Active && !phase3Active) return;
+        if (!isPhase1 && !isPhase2 && !isPhase3) return;
 
         RandomSource random = level.getRandom();
         int minSection = chunk.getMinSection();
@@ -39,9 +39,9 @@ public class ChunkErosionHandler {
 
             if (!section.getStates().maybeHas(state -> {
                 Block block = state.getBlock();
-                return (phase1Active && Config.sunErosionPhase1.containsKey(block))
-                    || (phase2Active && Config.sunErosionPhase2.containsKey(block))
-                    || (phase3Active && Config.sunErosionPhase3.containsKey(block));
+                return (isPhase1 && Config.sunErosionPhase1.containsKey(block))
+                    || (isPhase2 && Config.sunErosionPhase2.containsKey(block))
+                    || (isPhase3 && Config.sunErosionPhase3.containsKey(block));
             })) continue;
 
             int sectionY = (minSection + sectionIdx) * 16;
@@ -51,9 +51,9 @@ public class ChunkErosionHandler {
                     for (int z = 0; z < 16; z++) {
                         Block original = section.getBlockState(x, y, z).getBlock();
 
-                        boolean matches = (phase1Active && Config.sunErosionPhase1.containsKey(original))
-                                || (phase2Active && Config.sunErosionPhase2.containsKey(original))
-                                || (phase3Active && Config.sunErosionPhase3.containsKey(original));
+                        boolean matches = (isPhase1 && Config.sunErosionPhase1.containsKey(original))
+                                || (isPhase2 && Config.sunErosionPhase2.containsKey(original))
+                                || (isPhase3 && Config.sunErosionPhase3.containsKey(original));
                         if (!matches) continue;
 
                         pos.set(chunkX + x, sectionY + y, chunkZ + z);
@@ -64,17 +64,17 @@ public class ChunkErosionHandler {
                         if (!hasExposedFace(level, pos)) continue;
 
                         Block result = original;
-                        if (phase1Active) {
+                        if (isPhase1) {
                             Block target = Config.sunErosionPhase1.get(result);
-                            if (target != null && random.nextFloat() < chance1) result = target;
+                            if (target != null && random.nextFloat() < chancePhase1) result = target;
                         }
-                        if (phase2Active) {
+                        if (isPhase2) {
                             Block target = Config.sunErosionPhase2.get(result);
-                            if (target != null && random.nextFloat() < chance2) result = target;
+                            if (target != null && random.nextFloat() < chancePhase2) result = target;
                         }
-                        if (phase3Active) {
+                        if (isPhase3) {
                             Block target = Config.sunErosionPhase3.get(result);
-                            if (target != null && random.nextFloat() < chance3) result = target;
+                            if (target != null && random.nextFloat() < chancePhase3) result = target;
                         }
 
                         if (result == original) continue;

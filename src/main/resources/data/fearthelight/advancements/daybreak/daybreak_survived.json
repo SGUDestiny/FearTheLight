@@ -18,7 +18,7 @@
     "announce_to_chat": true,
     "hidden": false
   },
-  "parent": "fearthelight:daybreak/root/daybreak_activate",
+  "parent": "fearthelight:daybreak/daybreak_activate",
   "criteria":
   {
     "daybreak_finish":

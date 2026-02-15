@@ -1,7 +1,9 @@
 package destiny.fearthelight.common.events;
 
+import destiny.fearthelight.Config;
 import destiny.fearthelight.FearTheLight;
 import destiny.fearthelight.common.GenericProvider;
+import destiny.fearthelight.common.daybreak.SunErosionHandler;
 import destiny.fearthelight.common.daybreak.DaybreakCapability;
 import destiny.fearthelight.common.daybreak.DaybreakSavedData;
 import destiny.fearthelight.common.init.CapabilityRegistry;
@@ -13,6 +15,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -41,8 +44,16 @@ public class Events {
         if (event.phase != TickEvent.Phase.END || !event.side.isServer() || !(event.level instanceof ServerLevel level)) return;
         level.getCapability(CapabilityRegistry.DAYBREAK).ifPresent(cap -> {
             cap.tick(level);
+            SunErosionHandler.tick(level, cap);
             DaybreakSavedData.get(level).copyFrom(cap);
         });
+    }
+
+    // Tags are data-driven and not available during early config loading.
+    // Rebuild the sun erosion maps once tags are loaded (world load / datapack reload).
+    @SubscribeEvent
+    public static void onTagsUpdated(TagsUpdatedEvent event) {
+        Config.rebuildSunErosion();
     }
 
     @SubscribeEvent

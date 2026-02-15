@@ -27,27 +27,35 @@ public class DaybreakCapability implements INBTSerializable<CompoundTag> {
     public int daybreakBeginDay = 0;
     public int daybreakLength = 0;
 
+    // Runtime flag (not saved) — prevents midnight logic from running twice per day
+    private boolean midnightProcessed = true;
+
     public void tick(Level level) {
         if (level.isClientSide() || level.getServer() == null) return;
 
         float timeOfDay = level.dimensionType().timeOfDay(level.getDayTime());
         long calculatedDay = level.getDayTime() / 24000L;
 
-        if (timeOfDay == 0.5 && calculatedDay > previousDay) {
-            System.out.println("TIME CORRECT");
-
+        // Keep day counter in sync immediately when game days advance.
+        // This handles /time set and /time add so phase calculations stay accurate.
+        if (calculatedDay > previousDay) {
+            int dayDelta = (previousDay >= 0) ? (int) (calculatedDay - previousDay) : 1;
             previousDay = calculatedDay;
-            currentDay++;
+            currentDay += dayDelta;
+            midnightProcessed = false;
+        }
+
+        // Daybreak begin/end decisions only happen at midnight, once per day
+        if (timeOfDay == 0.5 && !midnightProcessed) {
+            midnightProcessed = true;
 
             if (!isDayBroken) {
                 if (Config.daybreakMode.equals(Config.DaybreakModes.CHANCE)) {
                     RandomSource random = level.getRandom();
 
                     if (random.nextDouble() > 1 - daybreakChance) {
-                        System.out.println("Rolled success");
                         daybreakBegin(level);
                     } else {
-                        System.out.println("Rolled failure");
                         daybreakChance += (float) Config.daybreakAdditiveChance;
                     }
                 }
@@ -65,14 +73,10 @@ public class DaybreakCapability implements INBTSerializable<CompoundTag> {
         }
 
         if (timeOfDay >= 0.75 && timeOfDay <= 0.751 && currentDay == daybreakBeginDay) {
-            for(ServerPlayer player : ((ServerLevel) level).getPlayers(serverPlayer -> true)) {
+            for (ServerPlayer player : ((ServerLevel) level).getPlayers(serverPlayer -> true)) {
                 DaybreakCriterion.DAYBREAK_ACTIVATE.trigger(player);
             }
         }
-
-        System.out.println("Time of Day: " + timeOfDay);
-        System.out.println("Current Day: " + currentDay);
-        System.out.println("Chance: " + daybreakChance);
     }
 
     public void daybreakEnd(Level level) {

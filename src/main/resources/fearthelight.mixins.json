@@ -8,7 +8,9 @@
     "MixinOverworldEffects",
     "MixinBiomeColors"
   ],
-  "mixins":[],
+  "mixins":[
+    "MixinSpreadingSnowyDirtBlock"
+  ],
   "injectors":{
     "defaultRequire":1
   }

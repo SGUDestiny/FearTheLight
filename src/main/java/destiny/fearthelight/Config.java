@@ -111,17 +111,12 @@ public class Config {
         rebuildSunErosion();
     }
 
-    // Rebuilds all sun erosion phase maps from config entries.
-    // Called from onLoad and again from TagsUpdatedEvent, since tags are
-    // data-driven and not available during early config loading.
     public static void rebuildSunErosion() {
         parseErosionList(SUN_EROSION_PHASE_1.get(), sunErosionPhase1);
         parseErosionList(SUN_EROSION_PHASE_2.get(), sunErosionPhase2);
         parseErosionList(SUN_EROSION_PHASE_3.get(), sunErosionPhase3);
     }
 
-    // Parses a list of "source,target" entries into a Block->Block map.
-    // Source entries prefixed with # are expanded as block tags.
     private static void parseErosionList(List<? extends String> entries, Map<Block, Block> target) {
         target.clear();
         for (String entry : entries) {
@@ -134,14 +129,12 @@ public class Config {
             Block to = BuiltInRegistries.BLOCK.get(toId);
 
             if (sourceStr.startsWith("#")) {
-                // Tag source: expand to all blocks in the tag
                 ResourceLocation tagId = ResourceLocation.tryParse(sourceStr.substring(1));
                 if (tagId == null) continue;
                 TagKey<Block> tagKey = TagKey.create(Registries.BLOCK, tagId);
                 BuiltInRegistries.BLOCK.getTag(tagKey)
                         .ifPresent(tag -> tag.forEach(holder -> target.put(holder.value(), to)));
             } else {
-                // Single block source
                 ResourceLocation fromId = ResourceLocation.tryParse(sourceStr);
                 if (fromId == null || !BuiltInRegistries.BLOCK.containsKey(fromId)) continue;
                 target.put(BuiltInRegistries.BLOCK.get(fromId), to);

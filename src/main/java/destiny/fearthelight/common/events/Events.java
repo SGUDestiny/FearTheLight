@@ -53,16 +53,11 @@ public class Events {
         });
     }
 
-    // Tags are data-driven and not available during early config loading.
-    // Rebuild the sun erosion maps once tags are loaded (world load / datapack reload).
     @SubscribeEvent
     public static void onTagsUpdated(TagsUpdatedEvent event) {
         Config.rebuildSunErosion();
     }
 
-    // Pre-erode blocks in newly generated overworld chunks during active Daybreak.
-    // Processing is deferred to the next server tick so that neighboring chunks are
-    // fully loaded, avoiding a deadlock from cross-chunk block access during loading.
     @SubscribeEvent
     public static void onChunkLoad(ChunkEvent.Load event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;

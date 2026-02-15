@@ -27,7 +27,6 @@ public class DaybreakCapability implements INBTSerializable<CompoundTag> {
     public int daybreakBeginDay = 0;
     public int daybreakLength = 0;
 
-    // Runtime flag (not saved) — prevents midnight logic from running twice per day
     private boolean midnightProcessed = true;
 
     public void tick(Level level) {
@@ -36,8 +35,6 @@ public class DaybreakCapability implements INBTSerializable<CompoundTag> {
         float timeOfDay = level.dimensionType().timeOfDay(level.getDayTime());
         long calculatedDay = level.getDayTime() / 24000L;
 
-        // Keep day counter in sync immediately when game days advance.
-        // This handles /time set and /time add so phase calculations stay accurate.
         if (calculatedDay > previousDay) {
             int dayDelta = (previousDay >= 0) ? (int) (calculatedDay - previousDay) : 1;
             previousDay = calculatedDay;
@@ -45,7 +42,6 @@ public class DaybreakCapability implements INBTSerializable<CompoundTag> {
             midnightProcessed = false;
         }
 
-        // Daybreak begin/end decisions only happen at midnight, once per day
         if (timeOfDay == 0.5 && !midnightProcessed) {
             midnightProcessed = true;
 

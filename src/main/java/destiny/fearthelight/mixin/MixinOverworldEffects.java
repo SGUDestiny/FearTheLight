@@ -1,7 +1,7 @@
 package destiny.fearthelight.mixin;
 
 import destiny.fearthelight.common.daybreak.DaybreakOverworldEffects;
-import destiny.fearthelight.common.init.CapabilityRegistry;
+import destiny.fearthelight.common.registry.CapabilityRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.DimensionSpecialEffects;

@@ -1,7 +1,7 @@
 package destiny.fearthelight.common.network;
 
-import destiny.fearthelight.common.init.CapabilityRegistry;
 import destiny.fearthelight.common.network.packets.DaybreakUpdatePacket;
+import destiny.fearthelight.common.registry.CapabilityRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;

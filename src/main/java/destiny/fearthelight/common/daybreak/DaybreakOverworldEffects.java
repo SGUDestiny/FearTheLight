@@ -1,6 +1,5 @@
 package destiny.fearthelight.common.daybreak;
 
-import destiny.fearthelight.common.init.CapabilityRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
@@ -10,6 +9,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
+
+import destiny.fearthelight.common.registry.CapabilityRegistry;
 
 import java.awt.Color;
 import java.util.concurrent.atomic.AtomicBoolean;

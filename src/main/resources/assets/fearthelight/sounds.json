@@ -1,0 +1,12 @@
+{
+    "daybreak_start_music": {
+      "sounds": [
+        "fearthelight:daybreak_start_music"
+      ]
+    },
+    "daybreak_end_music": {
+        "sounds": [
+          "fearthelight:daybreak_end_music"
+        ]
+    }
+}

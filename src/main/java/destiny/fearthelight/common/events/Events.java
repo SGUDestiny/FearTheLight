@@ -67,8 +67,9 @@ public class Events {
 
         level.getServer().tell(new TickTask(level.getServer().getTickCount() + 1, () ->
             level.getCapability(CapabilityRegistry.DAYBREAK).ifPresent(cap -> {
-                if (!cap.isDayBroken) return;
-                ChunkErosionHandler.processNewChunk(level, chunk, cap);
+                if (cap.isDayBroken) {
+                    ChunkErosionHandler.processNewChunk(level, chunk, cap);
+                }
             })
         ));
     }

@@ -56,7 +56,7 @@ public class Config {
             .comment("Sun erosion phase 1 — active immediately when Daybreak starts")
             .comment("Each entry is: source,target. Source can be a block ID or a tag (#minecraft:leaves)")
             .comment("Default: grass_block -> dirt")
-            .defineListAllowEmpty("sun_erosion_phase_1", List.of("#minecraft:flowers,minecraft:dead_bush", "#minecraft:leaves,minecraft:air", "minecraft:grass_block,minecraft:dirt", "minecraft:tall_grass,minecraft:air", "minecraft:grass,minecraft:air"), Config::isValidBlockPair);
+            .defineListAllowEmpty("sun_erosion_phase_1", List.of("#minecraft:flowers,minecraft:dead_bush", "#minecraft:leaves,minecraft:air", "#minecraft:crops,minecraft:dead_bush", "minecraft:grass_block,minecraft:dirt", "minecraft:tall_grass,minecraft:air", "minecraft:grass,minecraft:air", "minecraft:vine,minecraft:air"), Config::isValidBlockPair);
 
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SUN_EROSION_PHASE_2 = BUILDER
             .comment("Sun erosion phase 2 — activates after 1/3 of the Daybreak passed")
@@ -69,15 +69,11 @@ public class Config {
             .defineListAllowEmpty("sun_erosion_phase_3", List.of("minecraft:stone,minecraft:cobblestone", "minecraft:deepslate,minecraft:cobbled_deepslate"), Config::isValidBlockPair);
 
     private static final ForgeConfigSpec.IntValue SUN_EROSION_SPEED = BUILDER
-            .comment("Number of random block positions to check per player per tick to be eroded during Daybreak")
+            .comment("Number of random block positions to check per tick to be eroded during Daybreak")
+            .comment("Positions are sampled across all loaded chunks")
             .comment("Higher values = faster erosion but more server load")
             .comment("Default: 16")
             .defineInRange("sun_erosion_speed", 16, 0, 256);
-
-    private static final ForgeConfigSpec.IntValue SUN_EROSION_RADIUS = BUILDER
-            .comment("Radius in blocks around each player to check for sun erosion during Daybreak")
-            .comment("Default: 64")
-            .defineInRange("sun_erosion_radius", 64, 1, 256);
 
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
@@ -97,7 +93,6 @@ public class Config {
     public static int daybreakLengthMin;
     public static int daybreakLengthMax;
     public static int sunErosionSpeed;
-    public static int sunErosionRadius;
     public static Map<Block, Block> sunErosionPhase1 = new HashMap<>();
     public static Map<Block, Block> sunErosionPhase2 = new HashMap<>();
     public static Map<Block, Block> sunErosionPhase3 = new HashMap<>();
@@ -112,7 +107,6 @@ public class Config {
         daybreakLengthMax = DAYBREAK_LENGTH_MAX.get();
 
         sunErosionSpeed = SUN_EROSION_SPEED.get();
-        sunErosionRadius = SUN_EROSION_RADIUS.get();
 
         rebuildSunErosion();
     }

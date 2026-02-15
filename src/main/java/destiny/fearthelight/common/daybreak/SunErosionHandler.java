@@ -1,17 +1,23 @@
 package destiny.fearthelight.common.daybreak;
 
 import destiny.fearthelight.Config;
+import destiny.fearthelight.mixin.AccessorChunkMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import java.util.ArrayList;
+import java.util.List;
+
 // Handles gradual sun erosion during active Daybreak events.
-// Each tick, random surface positions around players are sampled and checked
+// Each tick, random surface positions in loaded chunks are sampled and checked
 // for sun exposure using a 2D DDA raycast toward the sun's current sky position.
 // Erosion has 3 phases that activate progressively as daybreak advances.
 public class SunErosionHandler {
@@ -39,47 +45,51 @@ public class SunErosionHandler {
         if (sunDirY <= 0.0) return;
 
         RandomSource random = level.getRandom();
-        int radius = Config.sunErosionRadius;
         int speed = Config.sunErosionSpeed;
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 
-        for (var player : level.players()) {
-            int playerX = player.blockPosition().getX();
-            int playerZ = player.blockPosition().getZ();
+        // Collect all ticking chunks so erosion applies everywhere, not just near players
+        List<LevelChunk> tickingChunks = new ArrayList<>();
+        for (ChunkHolder holder : ((AccessorChunkMap) level.getChunkSource().chunkMap).fearthelight$getChunks()) {
+            LevelChunk chunk = holder.getTickingChunk();
+            if (chunk != null) {
+                tickingChunks.add(chunk);
+            }
+        }
+        if (tickingChunks.isEmpty()) return;
 
-            for (int i = 0; i < speed; i++) {
-                int x = playerX + random.nextInt(radius * 2 + 1) - radius;
-                int z = playerZ + random.nextInt(radius * 2 + 1) - radius;
+        for (int i = 0; i < speed; i++) {
+            // Pick a random ticking chunk and a random column within it
+            LevelChunk chunk = tickingChunks.get(random.nextInt(tickingChunks.size()));
+            int x = chunk.getPos().getMinBlockX() + random.nextInt(16);
+            int z = chunk.getPos().getMinBlockZ() + random.nextInt(16);
 
-                if (!level.hasChunk(x >> 4, z >> 4)) continue;
+            // Use WORLD_SURFACE to include non-solid blocks like plants and flowers
+            int surfaceY = level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z) - 1;
+            if (surfaceY < level.getMinBuildHeight()) continue;
 
-                // Use WORLD_SURFACE to include non-solid blocks like plants and flowers
-                int surfaceY = level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z) - 1;
-                if (surfaceY < level.getMinBuildHeight()) continue;
+            // Scan downward through the column. Air gaps reset the depth
+            // counter so we can reach ground under tree canopies and overhangs.
+            // Only fully opaque blocks count toward the depth limit.
+            int opaqueDepth = 0;
+            for (int dy = 0; dy < MAX_COLUMN_SCAN && opaqueDepth <= SURFACE_DEPTH; dy++) {
+                int y = surfaceY - dy;
+                if (y < level.getMinBuildHeight()) break;
 
-                // Scan downward through the column. Air gaps reset the depth
-                // counter so we can reach ground under tree canopies and overhangs.
-                // Only fully opaque blocks count toward the depth limit.
-                int opaqueDepth = 0;
-                for (int dy = 0; dy < MAX_COLUMN_SCAN && opaqueDepth <= SURFACE_DEPTH; dy++) {
-                    int y = surfaceY - dy;
-                    if (y < level.getMinBuildHeight()) break;
+                pos.set(x, y, z);
+                BlockState state = level.getBlockState(pos);
 
-                    pos.set(x, y, z);
-                    BlockState state = level.getBlockState(pos);
+                // Air gaps reset depth — there may be more surfaces below (e.g. ground under trees)
+                if (state.isAir()) {
+                    opaqueDepth = 0;
+                    continue;
+                }
 
-                    // Air gaps reset depth — there may be more surfaces below (e.g. ground under trees)
-                    if (state.isAir()) {
-                        opaqueDepth = 0;
-                        continue;
-                    }
+                tryErodeBlock(level, pos, sunDirX, sunDirY, cap);
 
-                    tryErodeBlock(level, pos, sunDirX, sunDirY, cap);
-
-                    // Only count fully opaque blocks toward the depth limit
-                    if (state.canOcclude()) {
-                        opaqueDepth++;
-                    }
+                // Only count fully opaque blocks toward the depth limit
+                if (state.canOcclude()) {
+                    opaqueDepth++;
                 }
             }
         }
@@ -116,25 +126,30 @@ public class SunErosionHandler {
         Block target = getErosionTarget(state.getBlock(), cap);
         if (target == null) return;
 
-        // 2. Must have at least one face exposed to air
-        if (!hasExposedFace(level, pos)) return;
-
-        // 3. Must have direct line of sight to the sun
-        if (!isExposedToSun(level, pos, sunDirX, sunDirY)) return;
-
-        // All conditions met - erode the block
-        level.setBlock(pos, target.defaultBlockState(), Block.UPDATE_ALL);
-    }
-
-    // Returns true if any of the 6 neighboring blocks is non-solid (air, plants, flowers, etc.)
-    // Uses getLightBlock == 0 for consistency with the sun raycast's obstruction check.
-    private static boolean hasExposedFace(ServerLevel level, BlockPos pos) {
+        // 2. Must have at least one face exposed to air, and determine which faces
+        boolean topExposed = false;
+        boolean otherExposed = false;
         BlockPos.MutableBlockPos neighbor = new BlockPos.MutableBlockPos();
         for (Direction dir : Direction.values()) {
             neighbor.setWithOffset(pos, dir);
-            if (level.getBlockState(neighbor).getLightBlock(level, neighbor) == 0) return true;
+            if (level.getBlockState(neighbor).getLightBlock(level, neighbor) == 0) {
+                if (dir == Direction.UP) {
+                    topExposed = true;
+                } else {
+                    otherExposed = true;
+                }
+            }
         }
-        return false;
+        if (!topExposed && !otherExposed) return;
+
+        // 3. Must have direct line of sight to the sun.
+        // If only the top face is exposed, start the ray from the block's top surface
+        // so the angled ray doesn't step into an adjacent solid block first.
+        boolean onlyTopExposed = topExposed && !otherExposed;
+        if (!isExposedToSun(level, pos, sunDirX, sunDirY, onlyTopExposed)) return;
+
+        // All conditions met - erode the block
+        level.setBlock(pos, target.defaultBlockState(), Block.UPDATE_ALL);
     }
 
     // Checks if a position has vertical sky exposure using the same block transparency
@@ -157,13 +172,15 @@ public class SunErosionHandler {
     // 2D DDA (Digital Differential Analyzer) raycast from the block toward the sun.
     // The sun's path has no Z component in Minecraft, so this traverses only the X and Y axes.
     // Returns true if no light-blocking voxel is found between the origin and the sky.
-    private static boolean isExposedToSun(ServerLevel level, BlockPos origin, double sunDirX, double sunDirY) {
+    // When fromTop is true the ray starts at the block's top surface (the air block above)
+    // instead of the center, preventing false obstruction by adjacent solid blocks.
+    private static boolean isExposedToSun(ServerLevel level, BlockPos origin, double sunDirX, double sunDirY, boolean fromTop) {
         int z = origin.getZ();
         double startX = origin.getX() + 0.5;
-        double startY = origin.getY() + 0.5;
+        double startY = fromTop ? origin.getY() + 1.0 : origin.getY() + 0.5;
 
         int blockX = origin.getX();
-        int blockY = origin.getY();
+        int blockY = fromTop ? origin.getY() + 1 : origin.getY();
 
         // DDA step directions
         int stepX = sunDirX > 0 ? 1 : (sunDirX < 0 ? -1 : 0);

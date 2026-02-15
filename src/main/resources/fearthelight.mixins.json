@@ -9,7 +9,8 @@
     "MixinBiomeColors"
   ],
   "mixins":[
-    "MixinSpreadingSnowyDirtBlock"
+    "MixinSpreadingSnowyDirtBlock",
+    "AccessorChunkMap"
   ],
   "injectors":{
     "defaultRequire":1

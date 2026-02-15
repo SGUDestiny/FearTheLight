@@ -3,6 +3,7 @@ package destiny.fearthelight.common.events;
 import destiny.fearthelight.Config;
 import destiny.fearthelight.FearTheLight;
 import destiny.fearthelight.common.GenericProvider;
+import destiny.fearthelight.common.daybreak.ChunkErosionHandler;
 import destiny.fearthelight.common.daybreak.SunErosionHandler;
 import destiny.fearthelight.common.daybreak.DaybreakCapability;
 import destiny.fearthelight.common.daybreak.DaybreakSavedData;
@@ -11,13 +12,16 @@ import destiny.fearthelight.common.init.PacketRegistry;
 import destiny.fearthelight.common.network.ClientPacketHandler;
 import destiny.fearthelight.common.network.packets.DaybreakUpdatePacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -54,6 +58,24 @@ public class Events {
     @SubscribeEvent
     public static void onTagsUpdated(TagsUpdatedEvent event) {
         Config.rebuildSunErosion();
+    }
+
+    // Pre-erode blocks in newly generated overworld chunks during active Daybreak.
+    // Processing is deferred to the next server tick so that neighboring chunks are
+    // fully loaded, avoiding a deadlock from cross-chunk block access during loading.
+    @SubscribeEvent
+    public static void onChunkLoad(ChunkEvent.Load event) {
+        if (!(event.getLevel() instanceof ServerLevel level)) return;
+        if (level.dimension() != Level.OVERWORLD) return;
+        if (!(event.getChunk() instanceof LevelChunk chunk)) return;
+        if (chunk.getInhabitedTime() != 0) return;
+
+        level.getServer().tell(new TickTask(level.getServer().getTickCount() + 1, () ->
+            level.getCapability(CapabilityRegistry.DAYBREAK).ifPresent(cap -> {
+                if (!cap.isDayBroken) return;
+                ChunkErosionHandler.processNewChunk(level, chunk, cap);
+            })
+        ));
     }
 
     @SubscribeEvent

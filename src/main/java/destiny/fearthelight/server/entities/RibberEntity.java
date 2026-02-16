@@ -1,5 +1,6 @@
 package destiny.fearthelight.server.entities;
 
+import destiny.fearthelight.server.entities.goals.CustomMeleeAttackGoal;
 import net.minecraft.client.Minecraft;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
@@ -39,7 +40,6 @@ public class RibberEntity extends PathfinderMob implements GeoEntity {
         return PathfinderMob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 6)
                 .add(Attributes.ATTACK_DAMAGE, 2.0f)
-                .add(Attributes.ATTACK_SPEED, 2.5f)
                 .add(ForgeMod.STEP_HEIGHT_ADDITION.get(), 1f)
                 .add(ForgeMod.ENTITY_REACH.get(), -2.0f)
                 .add(Attributes.MOVEMENT_SPEED, 0.2f).build();
@@ -48,7 +48,7 @@ public class RibberEntity extends PathfinderMob implements GeoEntity {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new FloatGoal(this));
-        this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0D, false));
+        this.goalSelector.addGoal(2, new CustomMeleeAttackGoal(this, 1.0D, false, 1.2, 40));
         this.goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 1.0D));
         this.goalSelector.addGoal(5, new RandomLookAroundGoal(this));
 
@@ -58,7 +58,6 @@ public class RibberEntity extends PathfinderMob implements GeoEntity {
     @Override
     public boolean doHurtTarget(Entity target) {
         this.triggerAnim("attackAnimController", "attack");
-        //target.level().playSound(null, BlockPos.containing(target.position().x, target.position().y, target.position().z), SoundEvents.EVOKER_FANGS_ATTACK, SoundSource.HOSTILE, 0.25f, 1.25f);
         return super.doHurtTarget(target);
     }
 

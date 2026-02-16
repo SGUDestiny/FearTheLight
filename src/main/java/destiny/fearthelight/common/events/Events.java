@@ -7,6 +7,7 @@ import destiny.fearthelight.common.daybreak.ChunkErosionHandler;
 import destiny.fearthelight.common.daybreak.SunErosionHandler;
 import destiny.fearthelight.common.daybreak.DaybreakCapability;
 import destiny.fearthelight.common.daybreak.DaybreakSavedData;
+import destiny.fearthelight.common.daybreak.ErodedChunksSavedData;
 import destiny.fearthelight.common.network.ClientPacketHandler;
 import destiny.fearthelight.common.network.packets.DaybreakUpdatePacket;
 import destiny.fearthelight.common.registry.CapabilityRegistry;
@@ -67,9 +68,13 @@ public class Events {
 
         level.getServer().tell(new TickTask(level.getServer().getTickCount() + 1, () ->
             level.getCapability(CapabilityRegistry.DAYBREAK).ifPresent(cap -> {
-                if (cap.isDayBroken) {
-                    ChunkErosionHandler.processNewChunk(level, chunk, cap);
-                }
+                if (!cap.isDayBroken) return;
+                ErodedChunksSavedData erodedData = ErodedChunksSavedData.get(level);
+                erodedData.validateDaybreak(cap.daybreakBeginDay);
+                long chunkPosLong = chunk.getPos().toLong();
+                if (erodedData.isEroded(chunkPosLong)) return;
+                ChunkErosionHandler.processNewChunk(level, chunk, cap);
+                erodedData.markEroded(chunkPosLong);
             })
         ));
     }

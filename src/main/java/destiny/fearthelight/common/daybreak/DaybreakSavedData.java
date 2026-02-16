@@ -5,8 +5,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 
 public class DaybreakSavedData extends SavedData {
-
-    private static final String DATA_NAME = "fearthelight_daybreak";
+    private static final String DATA_NAME = "daybreak";
 
     private final CompoundTag tag = new CompoundTag();
 

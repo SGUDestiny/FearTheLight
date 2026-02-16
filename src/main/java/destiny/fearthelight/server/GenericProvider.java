@@ -1,4 +1,4 @@
-package destiny.fearthelight.common;
+package destiny.fearthelight.server;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;

@@ -1,4 +1,4 @@
-package destiny.fearthelight.common.daybreak;
+package destiny.fearthelight.server.daybreak;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -10,7 +10,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
-import destiny.fearthelight.common.registry.CapabilityRegistry;
+import destiny.fearthelight.server.registry.CapabilityRegistry;
 
 import java.awt.Color;
 import java.util.concurrent.atomic.AtomicBoolean;

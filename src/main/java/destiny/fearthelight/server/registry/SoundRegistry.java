@@ -1,4 +1,4 @@
-package destiny.fearthelight.common.registry;
+package destiny.fearthelight.server.registry;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;

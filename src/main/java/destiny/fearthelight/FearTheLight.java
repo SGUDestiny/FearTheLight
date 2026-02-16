@@ -1,11 +1,13 @@
 package destiny.fearthelight;
 
 import com.mojang.logging.LogUtils;
-import destiny.fearthelight.common.daybreak.DaybreakOverworldEffects;
-import destiny.fearthelight.common.registry.AdvancementRegistry;
-import destiny.fearthelight.common.registry.PacketRegistry;
-import destiny.fearthelight.common.registry.SoundRegistry;
-import net.minecraft.client.Minecraft;
+import destiny.fearthelight.client.render.entity.RibberEntityRenderer;
+import destiny.fearthelight.server.daybreak.DaybreakOverworldEffects;
+import destiny.fearthelight.server.registry.AdvancementRegistry;
+import destiny.fearthelight.server.registry.EntityRegistry;
+import destiny.fearthelight.server.registry.PacketRegistry;
+import destiny.fearthelight.server.registry.SoundRegistry;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -29,6 +31,8 @@ public class FearTheLight {
 
         AdvancementRegistry.register();
         SoundRegistry.SOUNDS.register(modEventBus);
+        EntityRegistry.register(modEventBus);
+
         modEventBus.addListener(this::commonSetup);
 
         MinecraftForge.EVENT_BUS.register(this);
@@ -46,9 +50,10 @@ public class FearTheLight {
         public static void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {
             event.register(DaybreakOverworldEffects.OVERWORLD_EFFECTS, new DaybreakOverworldEffects());
         }
+
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
-
+            EntityRenderers.register(EntityRegistry.RIBBER.get(), RibberEntityRenderer::new);
         }
     }
 }

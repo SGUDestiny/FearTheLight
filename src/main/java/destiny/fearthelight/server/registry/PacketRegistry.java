@@ -1,7 +1,7 @@
-package destiny.fearthelight.common.registry;
+package destiny.fearthelight.server.registry;
 
 import destiny.fearthelight.FearTheLight;
-import destiny.fearthelight.common.network.packets.DaybreakUpdatePacket;
+import destiny.fearthelight.server.network.packets.DaybreakUpdatePacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;

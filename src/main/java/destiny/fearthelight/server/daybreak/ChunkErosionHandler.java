@@ -1,4 +1,4 @@
-package destiny.fearthelight.common.daybreak;
+package destiny.fearthelight.server.daybreak;
 
 import destiny.fearthelight.Config;
 import net.minecraft.core.BlockPos;

@@ -1,8 +1,8 @@
-package destiny.fearthelight.common.events;
+package destiny.fearthelight.server.events;
 
 import destiny.fearthelight.FearTheLight;
-import destiny.fearthelight.common.daybreak.DaybreakOverworldEffects;
-import destiny.fearthelight.common.registry.CapabilityRegistry;
+import destiny.fearthelight.server.daybreak.DaybreakOverworldEffects;
+import destiny.fearthelight.server.registry.CapabilityRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.level.Level;

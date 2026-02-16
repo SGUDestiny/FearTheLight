@@ -1,7 +1,7 @@
-package destiny.fearthelight.common.registry;
+package destiny.fearthelight.server.registry;
 
 import destiny.fearthelight.FearTheLight;
-import destiny.fearthelight.common.daybreak.DaybreakCapability;
+import destiny.fearthelight.server.daybreak.DaybreakCapability;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;

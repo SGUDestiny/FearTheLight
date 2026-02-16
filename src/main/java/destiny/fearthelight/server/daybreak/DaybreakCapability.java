@@ -1,10 +1,10 @@
-package destiny.fearthelight.common.daybreak;
+package destiny.fearthelight.server.daybreak;
 
 import destiny.fearthelight.Config;
-import destiny.fearthelight.common.advancements.DaybreakCriterion;
-import destiny.fearthelight.common.network.packets.DaybreakUpdatePacket;
-import destiny.fearthelight.common.registry.PacketRegistry;
-import destiny.fearthelight.common.registry.SoundRegistry;
+import destiny.fearthelight.server.advancements.DaybreakCriterion;
+import destiny.fearthelight.server.network.packets.DaybreakUpdatePacket;
+import destiny.fearthelight.server.registry.PacketRegistry;
+import destiny.fearthelight.server.registry.SoundRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;

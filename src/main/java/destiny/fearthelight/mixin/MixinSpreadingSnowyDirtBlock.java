@@ -1,7 +1,7 @@
 package destiny.fearthelight.mixin;
 
-import destiny.fearthelight.common.daybreak.SunErosionHandler;
-import destiny.fearthelight.common.registry.CapabilityRegistry;
+import destiny.fearthelight.server.daybreak.SunErosionHandler;
+import destiny.fearthelight.server.registry.CapabilityRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;

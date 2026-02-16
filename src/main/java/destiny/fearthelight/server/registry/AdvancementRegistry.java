@@ -1,6 +1,6 @@
-package destiny.fearthelight.common.registry;
+package destiny.fearthelight.server.registry;
 
-import destiny.fearthelight.common.advancements.DaybreakCriterion;
+import destiny.fearthelight.server.advancements.DaybreakCriterion;
 import net.minecraft.advancements.CriteriaTriggers;
 
 public class AdvancementRegistry {

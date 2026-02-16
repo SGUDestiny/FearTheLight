@@ -1,4 +1,4 @@
-package destiny.fearthelight.common.advancements;
+package destiny.fearthelight.server.advancements;
 
 import destiny.fearthelight.FearTheLight;
 import net.minecraft.advancements.critereon.*;

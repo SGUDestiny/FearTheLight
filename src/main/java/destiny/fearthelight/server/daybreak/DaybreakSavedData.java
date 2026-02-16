@@ -1,4 +1,4 @@
-package destiny.fearthelight.common.daybreak;
+package destiny.fearthelight.server.daybreak;
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.nbt.CompoundTag;

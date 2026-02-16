@@ -1,8 +1,8 @@
-package destiny.fearthelight.common.network.packets;
+package destiny.fearthelight.server.network.packets;
 
 import java.util.function.Supplier;
 
-import destiny.fearthelight.common.network.ClientPacketHandler;
+import destiny.fearthelight.server.network.ClientPacketHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 

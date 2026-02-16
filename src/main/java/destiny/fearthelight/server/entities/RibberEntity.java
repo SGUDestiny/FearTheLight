@@ -2,8 +2,13 @@ package destiny.fearthelight.server.entities;
 
 import destiny.fearthelight.server.entities.goals.CustomMeleeAttackGoal;
 import destiny.fearthelight.server.registry.EntityRegistry;
+import destiny.fearthelight.server.registry.SoundRegistry;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,6 +19,7 @@ import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeMod;
@@ -27,7 +33,7 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class RibberEntity extends PathfinderMob implements GeoEntity {
+public class RibberEntity extends Monster implements GeoEntity {
     public final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
 
     protected static final RawAnimation MOVE_ANIM = RawAnimation.begin().thenLoop("move");
@@ -69,6 +75,32 @@ public class RibberEntity extends PathfinderMob implements GeoEntity {
     }
 
     @Override
+    public boolean shouldDespawnInPeaceful() {
+        return false;
+    }
+
+    @Override
+    protected void playStepSound(BlockPos pos, BlockState state) {
+        this.playSound(SoundRegistry.FLESH.get(), 0.25f, 0.5f);
+    }
+
+    @Override
+    protected void playHurtSound(DamageSource damageSource) {
+        this.playSound(SoundRegistry.FLESH_HIT.get(), 1f, 0.5f);
+    }
+    
+    @Override
+    public void die(DamageSource pDamageSource) {
+        super.die(pDamageSource);
+        this.playSound(SoundRegistry.FLESH_DIE.get(), 0.75f, 0.5f);
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return null;
+    }
+
+    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, "walkAnimController", 5, this::walkAnimController));
         controllers.add(new AnimationController<GeoAnimatable>(this, "attackAnimController", 0, state -> PlayState.CONTINUE)
@@ -77,7 +109,7 @@ public class RibberEntity extends PathfinderMob implements GeoEntity {
                 Player player = Minecraft.getInstance().player;
 
                 if (player != null)
-                    player.playSound(SoundEvents.EVOKER_FANGS_ATTACK, 0.25f, 1.25f);
+                    player.playSound(SoundEvents.EVOKER_FANGS_ATTACK, 0.1f, 1.25f);
             })
         );
     }

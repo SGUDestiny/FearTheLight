@@ -12,8 +12,11 @@ public class SoundRegistry {
 
     public static RegistryObject<SoundEvent> DAYBREAK_START_MUSIC = registerSoundEvent("daybreak_start_music");
     public static RegistryObject<SoundEvent> DAYBREAK_END_MUSIC = registerSoundEvent("daybreak_end_music");
+    public static RegistryObject<SoundEvent> FLESH = registerSoundEvent("flesh");
+    public static RegistryObject<SoundEvent> FLESH_HIT = registerSoundEvent("flesh_hit");
+    public static RegistryObject<SoundEvent> FLESH_DIE = registerSoundEvent("flesh_die");
 
     private static RegistryObject<SoundEvent> registerSoundEvent(String sound) {
-        return SOUNDS.register(sound, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FearTheLight.MODID, sound)));
+        return SOUNDS.register(sound, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.tryBuild(FearTheLight.MODID, sound)));
     }
 }

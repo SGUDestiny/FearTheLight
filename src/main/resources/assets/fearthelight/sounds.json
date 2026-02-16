@@ -8,5 +8,24 @@
         "sounds": [
           "fearthelight:daybreak_end_music"
         ]
+    },
+    "flesh": {
+      "sounds": [
+        "fearthelight:flesh_1",
+        "fearthelight:flesh_2",
+        "fearthelight:flesh_3"
+      ]
+    },
+    "flesh_hit": {
+      "sounds": [
+        "fearthelight:flesh_hit_1",
+        "fearthelight:flesh_hit_2",
+        "fearthelight:flesh_hit_3"
+      ]
+    },
+    "flesh_die": {
+      "sounds": [
+        "fearthelight:flesh_die"
+      ]
     }
 }

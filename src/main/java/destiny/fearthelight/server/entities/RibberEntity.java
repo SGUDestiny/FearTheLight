@@ -1,15 +1,16 @@
 package destiny.fearthelight.server.entities;
 
 import destiny.fearthelight.server.entities.goals.CustomMeleeAttackGoal;
+import destiny.fearthelight.server.registry.EntityRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
@@ -41,24 +42,30 @@ public class RibberEntity extends PathfinderMob implements GeoEntity {
                 .add(Attributes.MAX_HEALTH, 6)
                 .add(Attributes.ATTACK_DAMAGE, 2.0f)
                 .add(ForgeMod.STEP_HEIGHT_ADDITION.get(), 1f)
-                .add(ForgeMod.ENTITY_REACH.get(), -2.0f)
-                .add(Attributes.MOVEMENT_SPEED, 0.2f).build();
+                .add(Attributes.FOLLOW_RANGE, 32.0)
+                .add(Attributes.MOVEMENT_SPEED, 0.25f).build();
     }
 
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new FloatGoal(this));
-        this.goalSelector.addGoal(2, new CustomMeleeAttackGoal(this, 1.0D, false, 1.2, 40));
+        this.goalSelector.addGoal(2, new CustomMeleeAttackGoal(this, 1.0D, false, 1.5, 40));
         this.goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 1.0D));
         this.goalSelector.addGoal(5, new RandomLookAroundGoal(this));
 
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false,
+            target -> target.getType().getCategory() != EntityRegistry.MOLTEN_FLESH));
     }
 
     @Override
     public boolean doHurtTarget(Entity target) {
         this.triggerAnim("attackAnimController", "attack");
         return super.doHurtTarget(target);
+    }
+
+    @Override
+    public boolean removeWhenFarAway(double distanceToClosestPlayer) {
+        return false;
     }
 
     @Override

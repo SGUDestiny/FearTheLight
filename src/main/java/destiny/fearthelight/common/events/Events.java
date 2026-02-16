@@ -7,7 +7,6 @@ import destiny.fearthelight.common.daybreak.ChunkErosionHandler;
 import destiny.fearthelight.common.daybreak.SunErosionHandler;
 import destiny.fearthelight.common.daybreak.DaybreakCapability;
 import destiny.fearthelight.common.daybreak.DaybreakSavedData;
-import destiny.fearthelight.common.daybreak.ErodedChunksSavedData;
 import destiny.fearthelight.common.network.ClientPacketHandler;
 import destiny.fearthelight.common.network.packets.DaybreakUpdatePacket;
 import destiny.fearthelight.common.registry.CapabilityRegistry;
@@ -31,9 +30,10 @@ public class Events {
     @SubscribeEvent
     public static void attachCapabilities(AttachCapabilitiesEvent<Level> event) {
         Level level = event.getObject();
-        if (!level.dimensionTypeId().location().equals(new ResourceLocation("overworld"))) return;
+        if (!level.dimensionTypeId().location().equals(ResourceLocation.parse("overworld"))) return;
 
         DaybreakCapability cap;
+
         if (!level.isClientSide() && level instanceof ServerLevel serverLevel) {
             cap = new DaybreakCapability();
             cap.deserializeNBT(DaybreakSavedData.get(serverLevel).getTag());
@@ -41,12 +41,14 @@ public class Events {
             cap = new DaybreakCapability();
             cap.isDayBroken = ClientPacketHandler.getOverworldDayBroken();
         }
-        event.addCapability(new ResourceLocation(FearTheLight.MODID, "daybreak"), new GenericProvider<>(CapabilityRegistry.DAYBREAK, cap));
+
+        event.addCapability(ResourceLocation.tryBuild(FearTheLight.MODID, "daybreak"), new GenericProvider<>(CapabilityRegistry.DAYBREAK, cap));
     }
 
     @SubscribeEvent
     public static void levelTick(TickEvent.LevelTickEvent event) {
         if (event.phase != TickEvent.Phase.END || !event.side.isServer() || !(event.level instanceof ServerLevel level)) return;
+
         level.getCapability(CapabilityRegistry.DAYBREAK).ifPresent(cap -> {
             cap.tick(level);
             SunErosionHandler.tick(level, cap);
@@ -69,12 +71,15 @@ public class Events {
         level.getServer().tell(new TickTask(level.getServer().getTickCount() + 1, () ->
             level.getCapability(CapabilityRegistry.DAYBREAK).ifPresent(cap -> {
                 if (!cap.isDayBroken) return;
-                ErodedChunksSavedData erodedData = ErodedChunksSavedData.get(level);
-                erodedData.validateDaybreak(cap.daybreakBeginDay);
+
+                DaybreakSavedData daybreakData = DaybreakSavedData.get(level);
+                daybreakData.validateDaybreak(cap.daybreakBeginDay);
+
                 long chunkPosLong = chunk.getPos().toLong();
-                if (erodedData.isEroded(chunkPosLong)) return;
+                if (daybreakData.isEroded(chunkPosLong)) return;
+
                 ChunkErosionHandler.processNewChunk(level, chunk, cap);
-                erodedData.markEroded(chunkPosLong);
+                daybreakData.markEroded(chunkPosLong);
             })
         ));
     }
@@ -82,9 +87,10 @@ public class Events {
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
         ServerLevel overworld = player.getServer() != null ? player.getServer().overworld() : null;
         if (overworld == null) return;
-        overworld.getCapability(CapabilityRegistry.DAYBREAK).ifPresent(cap ->
-                PacketRegistry.sendTo(player, new DaybreakUpdatePacket(cap.isDayBroken)));
+
+        overworld.getCapability(CapabilityRegistry.DAYBREAK).ifPresent(cap -> PacketRegistry.sendTo(player, new DaybreakUpdatePacket(cap.isDayBroken)));
     }
 }

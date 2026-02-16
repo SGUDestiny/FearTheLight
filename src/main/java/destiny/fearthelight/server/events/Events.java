@@ -4,9 +4,9 @@ import destiny.fearthelight.Config;
 import destiny.fearthelight.FearTheLight;
 import destiny.fearthelight.server.GenericProvider;
 import destiny.fearthelight.server.daybreak.ChunkErosionHandler;
-import destiny.fearthelight.server.daybreak.SunErosionHandler;
 import destiny.fearthelight.server.daybreak.DaybreakCapability;
 import destiny.fearthelight.server.daybreak.DaybreakSavedData;
+import destiny.fearthelight.server.daybreak.SunErosionHandler;
 import destiny.fearthelight.server.network.ClientPacketHandler;
 import destiny.fearthelight.server.network.packets.DaybreakUpdatePacket;
 import destiny.fearthelight.server.registry.CapabilityRegistry;
@@ -15,15 +15,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -31,25 +27,6 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = FearTheLight.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class Events {
-    @SubscribeEvent
-    public void onLivingHurt(LivingAttackEvent event) {
-        Level level = event.getEntity().level();
-        LivingEntity attacker = event.getEntity()
-
-        cancelNonExistenceOnHit(event);
-
-        DamageSource source = event.getSource();
-        if (source.getEntity() instanceof Player player) {
-            ItemStack stack = player.getMainHandItem();
-
-            dragonSlayerDamageEvent(event, stack);
-
-            bloodletterFillVesselsOnHit(stack, source, player);
-
-            fillBloodletterOnHit(event, player);
-        }
-    }
-
     @SubscribeEvent
     public static void attachCapabilities(AttachCapabilitiesEvent<Level> event) {
         Level level = event.getObject();

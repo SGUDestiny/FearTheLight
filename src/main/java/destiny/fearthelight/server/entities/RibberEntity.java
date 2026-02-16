@@ -1,6 +1,6 @@
 package destiny.fearthelight.server.entities;
 
-import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -36,9 +36,10 @@ public class RibberEntity extends PathfinderMob implements GeoEntity {
     public static AttributeSupplier setAttributes() {
         return PathfinderMob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 6)
-                .add(Attributes.ATTACK_DAMAGE, 1.0f)
-                .add(Attributes.ATTACK_SPEED, 1.5f)
+                .add(Attributes.ATTACK_DAMAGE, 2.0f)
+                .add(Attributes.ATTACK_SPEED, 2.5f)
                 .add(ForgeMod.STEP_HEIGHT_ADDITION.get(), 1f)
+                .add(ForgeMod.ENTITY_REACH.get(), -1.0f)
                 .add(Attributes.MOVEMENT_SPEED, 0.2f).build();
     }
 
@@ -53,9 +54,21 @@ public class RibberEntity extends PathfinderMob implements GeoEntity {
     }
 
     @Override
+    public boolean doHurtTarget(Entity target) {
+        this.triggerAnim("attackAnimController", "attack");
+        //target.level().playSound(null, BlockPos.containing(target.position().x, target.position().y, target.position().z), SoundEvents.EVOKER_FANGS_ATTACK, SoundSource.HOSTILE, 0.25f, 1.25f);
+        return super.doHurtTarget(target);
+    }
+
+    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, "walkAnimController", 5, this::walkAnimController));
-        controllers.add(new AnimationController<GeoAnimatable>(this, "attackAnimController", 5, state -> PlayState.CONTINUE));
+        controllers.add(new AnimationController<GeoAnimatable>(this, "attackAnimController", 0, state -> PlayState.CONTINUE)
+            .triggerableAnim("attack", ATTACK_ANIM)
+            .setSoundKeyframeHandler(event -> {
+                event.getKeyframeData().getSound();
+            })
+        );
     }
 
     protected <E extends RibberEntity> PlayState walkAnimController(final AnimationState<E> event) {

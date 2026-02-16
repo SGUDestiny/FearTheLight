@@ -1,5 +1,7 @@
 package destiny.fearthelight.server.entities;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
@@ -39,7 +41,7 @@ public class RibberEntity extends PathfinderMob implements GeoEntity {
                 .add(Attributes.ATTACK_DAMAGE, 2.0f)
                 .add(Attributes.ATTACK_SPEED, 2.5f)
                 .add(ForgeMod.STEP_HEIGHT_ADDITION.get(), 1f)
-                .add(ForgeMod.ENTITY_REACH.get(), -1.0f)
+                .add(ForgeMod.ENTITY_REACH.get(), -2.0f)
                 .add(Attributes.MOVEMENT_SPEED, 0.2f).build();
     }
 
@@ -66,7 +68,10 @@ public class RibberEntity extends PathfinderMob implements GeoEntity {
         controllers.add(new AnimationController<GeoAnimatable>(this, "attackAnimController", 0, state -> PlayState.CONTINUE)
             .triggerableAnim("attack", ATTACK_ANIM)
             .setSoundKeyframeHandler(event -> {
-                event.getKeyframeData().getSound();
+                Player player = Minecraft.getInstance().player;
+
+                if (player != null)
+                    player.playSound(SoundEvents.EVOKER_FANGS_ATTACK, 0.25f, 1.25f);
             })
         );
     }

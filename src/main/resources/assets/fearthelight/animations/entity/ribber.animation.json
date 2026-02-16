@@ -6,61 +6,35 @@
 			"bones": {
 				"Mouth": {
 					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"0.2083": {
-							"vector": [22.5, 0, 0],
-							"easing": "easeOutSine"
-						},
-						"0.5": {
-							"vector": [0, 0, 0],
-							"easing": "easeInSine"
-						}
+						"0.0": [0, 0, 0],
+						"0.2083": [22.5, 0, 0],
+						"0.5": [0, 0, 0]
 					},
 					"position": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"0.2083": {
-							"vector": [0, 5, -0.5],
-							"easing": "easeOutSine"
-						},
-						"0.5": {
-							"vector": [0, 0, 0],
-							"easing": "easeInSine"
-						}
+						"0.0": [0, 0, 0],
+						"0.2083": [0, 5, -0.5],
+						"0.5": [0, 0, 0]
 					}
 				},
 				"MouthRight": {
 					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"0.1667": {
-							"vector": [0, 0, 45],
-							"easing": "easeOutSine"
-						},
-						"0.25": {
-							"vector": [0, 0, 0],
-							"easing": "easeInSine"
-						}
+						"0.0": [0, 0, 0],
+						"0.1667": [0, 0, 45],
+						"0.25": [0, 0, 0]
 					}
 				},
 				"MouthLeft": {
 					"rotation": {
-						"0.0": {
-							"vector": [0, 0, 0]
-						},
-						"0.1667": {
-							"vector": [0, 0, -45],
-							"easing": "easeOutSine"
-						},
-						"0.25": {
-							"vector": [0, 0, 0],
-							"easing": "easeInSine"
-						}
+						"0.0": [0, 0, 0],
+						"0.1667": [0, 0, -45],
+						"0.25": [0, 0, 0]
 					}
+				}
+			},
+			"sound_effects": {
+				"0.0": {
+					"effect": "entity.evoker_fangs.attack",
+					"locator": "minecraft"
 				}
 			}
 		},
